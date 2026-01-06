@@ -1,0 +1,103 @@
+{
+    "name": "Bhavani S",
+    "title": "Aspiring Software Developer",
+    "subtitle": "Python & Django Enthusiast",
+    "hero_text": "I build efficient, user-friendly applications with modern web technologies.\r\nPassionate about solving problems and learning new tools.",
+    "image": "uploads/WhatsApp_Image_2024-08-11_at_2.10.58_PM.jpeg",
+    "about_text": "I am Bhavani S, a Computer Science Engineering student at PET Engineering College. I am passionate about software development, with hands-on experience in Python, Django, and full-stack web development. I enjoy creating user-friendly applications and exploring modern tools.",
+    "skills": [
+        {
+            "name": "Html",
+            "icon": ""
+        },
+        {
+            "name": "CSS",
+            "icon": ""
+        },
+        {
+            "name": "JavaScript",
+            "icon": ""
+        },
+        {
+            "name": "Python",
+            "icon": ""
+        },
+        {
+            "name": "Supabase",
+            "icon": ""
+        },
+        {
+            "name": "Sql",
+            "icon": ""
+        },
+        {
+            "name": "Canva",
+            "icon": ""
+        }
+    ],
+    "achievements": [
+        {
+            "title": "First Prize - Poster",
+            "desc": "Won first prize at college poster competition."
+        }
+    ],
+    "experience": [
+        {
+            "year": "15/09/2025 \u2013 Present",
+            "role": "Web Development Intern",
+            "company": "Labmentix, Bengaluru",
+            "description": "Actively working on front-end and back-end development with HTML,\r\nCSS, JavaScript, Python, and Supabase, collaborating on real-time\r\nprojects"
+        },
+        {
+            "year": "04/07/2025 \u2013 02/08/2025",
+            "role": "Full Stack Developer",
+            "company": "G2G Technologies, Tirunelveli",
+            "description": "Performed UI and functional testing, identified defects, collaborated on\r\nfixes, and created posters and social media designs using Canva."
+        },
+        {
+            "year": "04/02/2025 \u2013 21/03/2025",
+            "role": "Full Stack Development Intern",
+            "company": "G2G Technologies, Tirunelveli",
+            "description": "Assisted in developing web applications using the .NET framework\r\nwith SQL database integration and created posters and social media\r\ndesigns using Canva."
+        },
+        {
+            "year": "12/08/2024 \u2013 17/08/2024",
+            "role": "Full Stack Development (Python)",
+            "company": "RETECH Solutions Pvt Ltd, Chennai",
+            "description": "Developed a full-stack web application using Python, Django, HTML,\r\nCSS, and JavaScript, implementing frontend UI, backend logic, and\r\ndatabase functionality."
+        },
+        {
+            "year": "28/02/2024 \u2013 06/03/2024",
+            "role": "Web Designer Intern",
+            "company": "IDM Technologies, Vallioor",
+            "description": "Designed and implemented web pages using HTML, CSS, and\r\nJavaScript, ensuring responsive layout and improved user experience"
+        }
+    ],
+    "projects": [
+        {
+            "name": "Doctor Appointment Booking System",
+            "desc": "A web application developed using Django that allows patients to book appointments with doctors and manage schedules efficiently.",
+            "code": "https://github.com/Bhavani-SB/FSD",
+            "demo": "https://appointment-booking-system-for-hospital-2vcb.onrender.com/"
+        },
+        {
+            "name": "To-Do List Web Application",
+            "desc": "A responsive to-do list app built with HTML, CSS, and JavaScript, featuring add/remove tasks and persistence using localStorage.",
+            "code": "https://github.com/Bhavani-SB/To-do-list",
+            "demo": "https://to-do-list-beige-sigma.vercel.app"
+        }
+    ],
+    "blogs": [
+        {
+            "title": "my first blog",
+            "excerpt": "living happily",
+            "content": "doing the project",
+            "date": "2025-12-15"
+        }
+    ],
+    "contact_email": "sb.bhavani.sb@gmail.com",
+    "social_links": {
+        "linkedin": "https://www.linkedin.com/in/sb-bhavani-sb",
+        "github": "https://github.com/Bhavani-SB"
+    }
+}

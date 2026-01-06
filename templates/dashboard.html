@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>CMS Dashboard</title>
+  
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <!-- Bootstrap + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body { background: #f1f7ff; }
+    .sidebar {
+      width: 230px; height: 100vh; position: fixed; left:0; top:0;
+      background: linear-gradient(180deg,#0f172a,#1e3a8a); color:white; padding-top:76px;
+    }
+    .skill h4{text-decoration-color: #0f172a;}
+    .sidebar .brand { position:absolute; top:12px; left:18px; font-weight:700; }
+    .sidebar .menu a { display:block; color:rgba(255,255,255,0.95); padding:12px 18px; text-decoration:none; }
+    .sidebar .menu a:hover, .sidebar .menu a.active { background:#2563eb; border-radius:6px; color:white; }
+    .header { height:60px; background:#164ea6; color:white; position:fixed; left:230px; right:0; top:0; display:flex; align-items:center; justify-content:space-between; padding:0 20px; z-index:50; }
+    .content { margin-left:230px; margin-top:76px; padding:18px; }
+    .section { display:none; }
+    .section.active { display:block; }
+    .card-box { background:white; border-radius:10px; padding:18px; box-shadow:0 6px 22px rgba(16,24,40,0.06); }
+    .small-muted { color:#6b7280; font-size:0.9rem; }
+    .list-item { margin-bottom:10px; padding:12px; background:#f8fbff; border-radius:8px; display:flex; gap:8px; align-items:center; justify-content:space-between; }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <div class="brand ms-2">CMS Dashboard</div>
+    <nav class="menu mt-3">
+      <a href="#" class="active" data-target="home"><i class="bi bi-house-door me-2"></i>Home</a>
+      <a href="#" data-target="about"><i class="bi bi-person me-2"></i>About</a>
+      <a href="#" data-target="skills"><i class="bi bi-tools me-2"></i>Skills</a>
+      <a href="#" data-target="achievements"><i class="bi bi-trophy me-2"></i>Achievements</a>
+      <a href="#" data-target="experience"><i class="bi bi-briefcase me-2"></i>Experience</a>
+      <a href="#" data-target="projects"><i class="bi bi-code-slash me-2"></i>Projects</a>
+      <a href="#" data-target="blogs"><i class="bi bi-journal-text me-2"></i>Blog</a>
+      <a href="#" data-target="contact"><i class="bi bi-envelope me-2"></i>Contact</a>
+    </nav>
+  </div>
+
+  <div class="header">
+    <div class="d-flex align-items-center gap-3">
+      <h6 class="mb-0">Admin Panel</h6>
+      <span class="small-muted">Manage site content</span>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <div class="text-end me-2">
+        <div style="font-weight:600">Hi, Admin</div>
+        <div class="small-muted">admin</div>
+      </div>
+      <a href="/logout" class="btn btn-sm btn-outline-light"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+  </div>
+
+  <div class="content">
+    <form method="POST" enctype="multipart/form-data" id="dashboard-form">
+
+      <!-- HOME/HERO -->
+      <section id="home" class="section active">
+        <div class="card-box mb-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h4>Home / Hero</h4>
+              <p class="small-muted">Site name, headline and hero text.</p>
+            </div>
+            <div><small class="small-muted">Preview locked</small></div>
+          </div>
+
+          <div class="row g-3 mt-3">
+            <div class="col-md-4">
+              <label class="form-label">Name</label>
+              <input name="name" class="form-control" value="{{ data.name }}">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Title</label>
+              <input name="title" class="form-control" value="{{ data.title }}">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Subtitle</label>
+              <input name="subtitle" class="form-control" value="{{ data.subtitle }}">
+            </div>
+            <div class="col-12">
+              <label class="form-label">Hero Text</label>
+              <textarea name="hero_text" class="form-control" rows="3">{{ data.hero_text }}</textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Hero Image (upload)</label>
+              <input type="file" name="image" class="form-control">
+              <div class="small-muted mt-1">Current: {{ data.image }}</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section id="about" class="section">
+        <div class="card-box mb-4">
+          <h4>About</h4>
+          <p class="small-muted">Main about paragraph.</p>
+          <label class="form-label mt-2">About Text</label>
+          <textarea name="about_text" class="form-control" rows="4">{{ data.about_text }}</textarea>
+        </div>
+      </section>
+
+      <!-- SKILLS (replaces Education) -->
+      <section id="skills" class="section">
+        <div class="card-box mb-4 d-flex justify-content-between align-items-center">
+          <div>
+            <h4 >Skills</h4>
+            <p class="small-muted">Add skill icon and name.</p>
+          </div>
+          <div>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddSkill">
+              <i class="bi bi-plus-lg"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <div id="skills-list" class="mb-3">
+          {% for s in data.skills %}
+            <div class="list-item" data-kind="skill">
+              <div>
+                <strong>{{ s.name if s.name is defined else s }}</strong><br>
+                <small class="small-muted">{{ s.icon if s.icon is defined else '' }}</small>
+              </div>
+              <div>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button>
+              </div>
+              {% if s.name is defined %}
+                <input type="hidden" name="skill_name" value="{{ s.name }}">
+                <input type="hidden" name="skill_icon" value="{{ s.icon }}">
+              {% else %}
+                <input type="hidden" name="skill_name" value="{{ s }}">
+                <input type="hidden" name="skill_icon" value="">
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- ACHIEVEMENTS -->
+      <section id="achievements" class="section">
+        <div class="card-box mb-4 d-flex justify-content-between align-items-center">
+          <div><h4>Achievements</h4><p class="small-muted">Add awards, wins, etc.</p></div>
+          <div>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddAchievement">
+              <i class="bi bi-plus-lg"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <div id="achievements-list" class="mb-3">
+          {% for ach in data.achievements %}
+            <div class="list-item" data-kind="achievement">
+              <div><strong>{{ ach.title if ach.title is defined else ach }}</strong><br><small class="small-muted">{{ ach.desc if ach.desc is defined else '' }}</small></div>
+              <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+              {% if ach.title is defined %}
+                <input type="hidden" name="achievements_title" value="{{ ach.title }}">
+                <input type="hidden" name="achievements_desc" value="{{ ach.desc }}">
+              {% else %}
+                <input type="hidden" name="achievements" value="{{ ach }}">
+              {% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- EXPERIENCE -->
+      <section id="experience" class="section">
+        <div class="card-box mb-4 d-flex justify-content-between align-items-center">
+          <div><h4>Experience</h4><p class="small-muted">Add jobs, internships.</p></div>
+          <div>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddExperience">
+              <i class="bi bi-plus-lg"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <div id="experience-list" class="mb-3">
+          {% for exp in data.experience %}
+            <div class="list-item" data-kind="experience">
+              <div><strong>{{ exp.role }} — {{ exp.company }}</strong><br><small class="small-muted">{{ exp.year }} • {{ exp.description }}</small></div>
+              <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+              <input type="hidden" name="exp_year" value="{{ exp.year }}">
+              <input type="hidden" name="exp_role" value="{{ exp.role }}">
+              <input type="hidden" name="exp_company" value="{{ exp.company }}">
+              <input type="hidden" name="exp_description" value="{{ exp.description }}">
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- PROJECTS -->
+      <section id="projects" class="section">
+        <div class="card-box mb-4 d-flex justify-content-between align-items-center">
+          <div><h4>Projects</h4><p class="small-muted">Add project entries</p></div>
+          <div>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddProject">
+              <i class="bi bi-plus-lg"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <div id="project-list" class="mb-3">
+          {% for p in data.projects %}
+            <div class="list-item" data-kind="project">
+              <div><strong>{{ p.name }}</strong><br><small class="small-muted">{{ p.desc }}</small></div>
+              <div>
+                <a href="{{ p.code }}" class="btn btn-sm btn-outline-primary me-1" target="_blank">Code</a>
+                <a href="{{ p.demo }}" class="btn btn-sm btn-outline-success me-1" target="_blank">Demo</a>
+                <button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button>
+              </div>
+              <input type="hidden" name="proj_name" value="{{ p.name }}">
+              <input type="hidden" name="proj_desc" value="{{ p.desc }}">
+              <input type="hidden" name="proj_code" value="{{ p.code }}">
+              <input type="hidden" name="proj_demo" value="{{ p.demo }}">
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- BLOGS -->
+      <section id="blogs" class="section">
+        <div class="card-box mb-4 d-flex justify-content-between align-items-center">
+          <div><h4>Blog</h4><p class="small-muted">Add blog posts for portfolio</p></div>
+          <div>
+            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAddBlog">
+              <i class="bi bi-plus-lg"></i> Add
+            </button>
+          </div>
+        </div>
+
+        <div id="blog-list" class="mb-3">
+          {% for b in data.blogs %}
+            <div class="list-item" data-kind="blog">
+              <div><strong>{{ b.title }}</strong><br><small class="small-muted">{{ b.excerpt }} • {{ b.date }}</small></div>
+              <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+              <input type="hidden" name="blog_title" value="{{ b.title }}">
+              <input type="hidden" name="blog_excerpt" value="{{ b.excerpt }}">
+              <input type="hidden" name="blog_content" value="{{ b.content }}">
+              <input type="hidden" name="blog_date" value="{{ b.date }}">
+            </div>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section id="contact" class="section">
+        <div class="card-box mb-4">
+          <h4>Contact</h4>
+          <p class="small-muted">Site contact & social links</p>
+          <div class="row g-3 mt-2">
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input class="form-control" name="contact_email" value="{{ data.contact_email }}">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">LinkedIn</label>
+              <input class="form-control" name="linkedin" value="{{ data.social_links.linkedin }}">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">GitHub</label>
+              <input class="form-control" name="github" value="{{ data.social_links.github }}">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="mt-3">
+        <button type="submit" class="btn btn-success btn-lg"><i class="bi bi-save2"></i> Save All Changes</button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- MODALS -->
+
+  <!-- Skill Modal -->
+  <div class="modal fade" id="modalAddSkill" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Add Skill</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <label class="form-label">Skill Icon URL (optional)</label>
+          <input id="skill-icon" type="text" class="form-control mb-2" placeholder="https://... or leave blank">
+          <label class="form-label">Skill Name</label>
+          <input id="skill-name" type="text" class="form-control mb-2" placeholder="e.g. Python">
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button id="add-skill-btn" type="button" class="btn btn-primary">Add Skill</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Achievement Modal -->
+  <div class="modal fade" id="modalAddAchievement" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Add Achievement</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <label class="form-label">Title</label>
+          <input id="ach-title" type="text" class="form-control mb-2" placeholder="Title">
+          <label class="form-label">Description</label>
+          <textarea id="ach-desc" class="form-control mb-2" rows="3"></textarea>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button id="add-ach-btn" type="button" class="btn btn-primary">Add Achievement</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Experience Modal -->
+  <div class="modal fade" id="modalAddExperience" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Add Experience</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Year</label><input id="exp-year" type="text" class="form-control" placeholder="2025"></div>
+            <div class="col-md-4"><label class="form-label">Role</label><input id="exp-role" type="text" class="form-control" placeholder="Role"></div>
+            <div class="col-md-5"><label class="form-label">Company</label><input id="exp-company" type="text" class="form-control" placeholder="Company"></div>
+            <div class="col-12"><label class="form-label">Description</label><textarea id="exp-desc" class="form-control" rows="3"></textarea></div>
+          </div>
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button id="add-exp-btn" type="button" class="btn btn-primary">Add Experience</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Modal -->
+  <div class="modal fade" id="modalAddProject" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Add Project</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <label class="form-label">Project Name</label><input id="proj-name" type="text" class="form-control mb-2">
+          <label class="form-label">Description</label><textarea id="proj-desc" class="form-control mb-2" rows="3"></textarea>
+          <label class="form-label">View Code (URL)</label><input id="proj-code" type="text" class="form-control mb-2">
+          <label class="form-label">Demo (URL)</label><input id="proj-demo" type="text" class="form-control mb-2">
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button id="add-proj-btn" type="button" class="btn btn-primary">Add Project</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blog Modal -->
+  <div class="modal fade" id="modalAddBlog" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Add Blog Post</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+          <label class="form-label">Title</label><input id="blog-title" type="text" class="form-control mb-2">
+          <label class="form-label">Excerpt</label><input id="blog-excerpt" type="text" class="form-control mb-2">
+          <label class="form-label">Content</label><textarea id="blog-content" class="form-control mb-2" rows="6"></textarea>
+          <label class="form-label">Date (YYYY-MM-DD)</label><input id="blog-date" type="text" class="form-control mb-2" placeholder="2025-12-11">
+        </div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button id="add-blog-btn" type="button" class="btn btn-primary">Add Blog</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.querySelectorAll('.menu a').forEach(a => {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        document.querySelectorAll('.menu a').forEach(i => i.classList.remove('active'));
+        a.classList.add('active');
+        const target = a.getAttribute('data-target');
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(target).classList.add('active');
+      });
+    });
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function pushSkill(name, icon) {
+      const list = document.getElementById('skills-list');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'list-item';
+      wrapper.innerHTML = `
+        <div><strong>${name}</strong><br><small class="small-muted">${icon}</small></div>
+        <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+        <input type="hidden" name="skill_name" value="${escapeHtml(name)}">
+        <input type="hidden" name="skill_icon" value="${escapeHtml(icon)}">
+      `;
+      list.appendChild(wrapper);
+      wrapper.querySelector('.remove-list-item').addEventListener('click', () => wrapper.remove());
+    }
+
+    function pushAchievement(title, desc) {
+      const list = document.getElementById('achievements-list');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'list-item';
+      wrapper.innerHTML = `
+        <div><strong>${title}</strong><br><small class="small-muted">${desc}</small></div>
+        <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+        <input type="hidden" name="achievements_title" value="${escapeHtml(title)}">
+        <input type="hidden" name="achievements_desc" value="${escapeHtml(desc)}">
+      `;
+      list.appendChild(wrapper);
+      wrapper.querySelector('.remove-list-item').addEventListener('click', () => wrapper.remove());
+    }
+
+    function pushExperience(year, role, company, desc) {
+      const list = document.getElementById('experience-list');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'list-item';
+      wrapper.innerHTML = `
+        <div><strong>${role} — ${company}</strong><br><small class="small-muted">${year} • ${desc}</small></div>
+        <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+        <input type="hidden" name="exp_year" value="${escapeHtml(year)}">
+        <input type="hidden" name="exp_role" value="${escapeHtml(role)}">
+        <input type="hidden" name="exp_company" value="${escapeHtml(company)}">
+        <input type="hidden" name="exp_description" value="${escapeHtml(desc)}">
+      `;
+      list.appendChild(wrapper);
+      wrapper.querySelector('.remove-list-item').addEventListener('click', () => wrapper.remove());
+    }
+
+    function pushProject(name, desc, code, demo) {
+      const list = document.getElementById('project-list');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'list-item';
+      wrapper.innerHTML = `
+        <div><strong>${name}</strong><br><small class="small-muted">${desc}</small></div>
+        <div>
+          <a href="${escapeHtml(code)}" target="_blank" class="btn btn-sm btn-outline-primary me-1">Code</a>
+          <a href="${escapeHtml(demo)}" target="_blank" class="btn btn-sm btn-outline-success me-1">Demo</a>
+          <button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button>
+        </div>
+        <input type="hidden" name="proj_name" value="${escapeHtml(name)}">
+        <input type="hidden" name="proj_desc" value="${escapeHtml(desc)}">
+        <input type="hidden" name="proj_code" value="${escapeHtml(code)}">
+        <input type="hidden" name="proj_demo" value="${escapeHtml(demo)}">
+      `;
+      list.appendChild(wrapper);
+      wrapper.querySelector('.remove-list-item').addEventListener('click', () => wrapper.remove());
+    }
+
+    function pushBlog(title, excerpt, content, date) {
+      const list = document.getElementById('blog-list');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'list-item';
+      wrapper.innerHTML = `
+        <div><strong>${title}</strong><br><small class="small-muted">${excerpt} • ${date}</small></div>
+        <div><button type="button" class="btn btn-sm btn-outline-danger remove-list-item">Remove</button></div>
+        <input type="hidden" name="blog_title" value="${escapeHtml(title)}">
+        <input type="hidden" name="blog_excerpt" value="${escapeHtml(excerpt)}">
+        <input type="hidden" name="blog_content" value="${escapeHtml(content)}">
+        <input type="hidden" name="blog_date" value="${escapeHtml(date)}">
+      `;
+      list.appendChild(wrapper);
+      wrapper.querySelector('.remove-list-item').addEventListener('click', () => wrapper.remove());
+    }
+
+    // Modal handlers
+    document.getElementById('add-skill-btn').addEventListener('click', () => {
+      const name = document.getElementById('skill-name').value.trim();
+      const icon = document.getElementById('skill-icon').value.trim();
+      if (!name) { alert('Enter skill name'); return; }
+      pushSkill(name, icon);
+      document.getElementById('skill-name').value=''; document.getElementById('skill-icon').value='';
+      bootstrap.Modal.getInstance(document.getElementById('modalAddSkill')).hide();
+    });
+
+    document.getElementById('add-ach-btn').addEventListener('click', () => {
+      const title = document.getElementById('ach-title').value.trim();
+      const desc = document.getElementById('ach-desc').value.trim();
+      if (!title) { alert('Enter title'); return; }
+      pushAchievement(title, desc);
+      document.getElementById('ach-title').value=''; document.getElementById('ach-desc').value='';
+      bootstrap.Modal.getInstance(document.getElementById('modalAddAchievement')).hide();
+    });
+
+    document.getElementById('add-exp-btn').addEventListener('click', () => {
+      const year = document.getElementById('exp-year').value.trim();
+      const role = document.getElementById('exp-role').value.trim();
+      const company = document.getElementById('exp-company').value.trim();
+      const desc = document.getElementById('exp-desc').value.trim();
+      if (!role) { alert('Enter role'); return; }
+      pushExperience(year, role, company, desc);
+      document.getElementById('exp-year').value=''; document.getElementById('exp-role').value=''; document.getElementById('exp-company').value=''; document.getElementById('exp-desc').value='';
+      bootstrap.Modal.getInstance(document.getElementById('modalAddExperience')).hide();
+    });
+
+    document.getElementById('add-proj-btn').addEventListener('click', () => {
+      const name = document.getElementById('proj-name').value.trim();
+      const desc = document.getElementById('proj-desc').value.trim();
+      const code = document.getElementById('proj-code').value.trim();
+      const demo = document.getElementById('proj-demo').value.trim();
+      if (!name) { alert('Enter project name'); return; }
+      pushProject(name, desc, code, demo);
+      document.getElementById('proj-name').value=''; document.getElementById('proj-desc').value=''; document.getElementById('proj-code').value=''; document.getElementById('proj-demo').value='';
+      bootstrap.Modal.getInstance(document.getElementById('modalAddProject')).hide();
+    });
+
+    document.getElementById('add-blog-btn').addEventListener('click', () => {
+      const t = document.getElementById('blog-title').value.trim();
+      const ex = document.getElementById('blog-excerpt').value.trim();
+      const cont = document.getElementById('blog-content').value.trim();
+      const dt = document.getElementById('blog-date').value.trim();
+      if (!t) { alert('Enter blog title'); return; }
+      pushBlog(t, ex, cont, dt);
+      document.getElementById('blog-title').value=''; document.getElementById('blog-excerpt').value=''; document.getElementById('blog-content').value=''; document.getElementById('blog-date').value='';
+      bootstrap.Modal.getInstance(document.getElementById('modalAddBlog')).hide();
+    });
+
+    // Remove pre-rendered items
+    document.querySelectorAll('.remove-list-item').forEach(btn => btn.addEventListener('click', e => e.target.closest('.list-item').remove()));
+  </script>
+</body>
+</html>
